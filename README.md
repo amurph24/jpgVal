@@ -1,0 +1,2 @@
+# jpgVal
+validates jpg files
