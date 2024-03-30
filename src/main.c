@@ -73,8 +73,10 @@ int validateFiles(char *path) {
 	// determine file or dir
 	DIR *dir = opendir(path);
 	if (!dir) {
-		printf("'%s' is not a dir\n", path);
-		isFilePathJPG(path);
+		if (isFilePathJPG(path)) {
+			printf("%30s is a valid jpg image\n", path);
+		}
+		
 		return 0;
 	}
 
