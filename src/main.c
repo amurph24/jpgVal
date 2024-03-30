@@ -62,39 +62,38 @@ int isPathJPG(char *path) {
 	return isJPG;
 }
 
-int validateFiles(int argc, char **argv) {
-	//validate usage
-	if (argc != 2) {
-		printf("usage: jpgVal <filepath> OR jpgVal <dirpath>\n");
-		return 1;
-	}
-	
+int validateFiles(char *path) {
 	// START recursion
-	//validate path
-	if (access(argv[1], F_OK)) {
-		printf("'%s' does not exist\n", argv[1]);
+	// validate path
+	if (access(path, F_OK)) {
+		printf("'%s' does not exist\n", path);
 		return 1;
 	}
-	printf("'%s' does exist\n", argv[1]);
+	printf("'%s' does exist\n", path);
 	
-	//check file or dir
-	DIR *dir = opendir(argv[1]);
+	// determine file or dir
+	DIR *dir = opendir(path);
 	if (!dir) {
-		printf("'%s' is not a dir\n", argv[1]);
-		isPathJPG(argv[1]);
+		printf("'%s' is not a dir\n", path);
+		isPathJPG(path);
 		return 0;
 	}
 
-	printf("'%s' is a dir, checking contents...\n", argv[1]);
-		// for (...)
-		// {
+	printf("'%s' is a dir, checking contents...\n", path);
+		
+	// while (files in dir) {
 		// *recursion call*
-		// }
+	// }
 	// END recursion
 	return 0;
 }
 
 int main(int argc, char **argv) {
-	return validateFiles(argc, argv);
+	if (argc != 2) {
+		printf("usage: jpgVal <filepath> OR jpgVal <dirpath>\n");
+		return 1;
+	}
+
+	return validateFiles(argv[1]);
 }
 
