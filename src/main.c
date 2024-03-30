@@ -28,7 +28,7 @@ int isFileJPG(FILE *file, char *path) {
 	// move "buffer" over bytes
 	do {
 		if (counter >= MAX_BYTES) {
-			printf("%20s exceeds max file size of: %d bytes\n", path, MAX_BYTES);
+			printf("%20s exceeds max file size: %d bytes\n", path, MAX_BYTES);
 			return 0;
 		}
 		// move "buffer" forward
@@ -44,19 +44,19 @@ int isFileJPG(FILE *file, char *path) {
 		return 0;
 	}
 	
-	printf("%20s is a valid jpg file\n", path);
 	return 1;
 }
 
-int isPathJPG(char *path) {
+
+int isFilePathJPG(char *path) {
 	// pass file to checker
 	FILE *file = fopen(path, "rb");
 	int isJPG = isFileJPG(file, path);
 	fclose(file);
 
-	// throw errors
+	// print invalid files to console
 	if (!isJPG) {
-		printf("%20s is not a valid jpg file\n", path);
+		printf("%30s - INVALID\n", path);
 	}
 
 	return isJPG;
@@ -66,16 +66,15 @@ int validateFiles(char *path) {
 	// START recursion
 	// validate path
 	if (access(path, F_OK)) {
-		printf("'%s' does not exist\n", path);
+		printf("'%s' cannot be accessed\n", path);
 		return 1;
 	}
-	printf("'%s' does exist\n", path);
 	
 	// determine file or dir
 	DIR *dir = opendir(path);
 	if (!dir) {
 		printf("'%s' is not a dir\n", path);
-		isPathJPG(path);
+		isFilePathJPG(path);
 		return 0;
 	}
 
