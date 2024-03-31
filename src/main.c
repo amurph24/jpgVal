@@ -72,6 +72,7 @@ int validateFiles(char *path) {
 	
 	// determine file or dir
 	DIR *dir = opendir(path);
+	
 	if (!dir) {
 		if (isFilePathJPG(path)) {
 			printf("%30s is a valid jpg image\n", path);
@@ -79,12 +80,25 @@ int validateFiles(char *path) {
 		
 		return 0;
 	}
-
+	
+	// path is dir, start checking contents
+	
+	char *childPath = (char*)malloc(30 * sizeof(char));
+	struct dirent *dirChild;
+	char slash = '/';
+	
 	printf("'%s' is a dir, checking contents...\n", path);
+	while ((dirChild = readdir(dir)) != NULL) {
+		printf("%s\n", dirChild->d_name);
 		
-	// while (files in dir) {
-		// *recursion call*
-	// }
+		// get path of child	
+		strcpy(childPath, path);
+		strcat(childPath, &slash);
+		strcat(childPath, dirChild->d_name);
+		printf("%s\n", childPath);
+	}
+
+	closedir(dir);
 	// END recursion
 	return 0;
 }
