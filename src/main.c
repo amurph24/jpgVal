@@ -10,6 +10,12 @@
 #define D8 216
 #define D9 217
 
+#define SELF "."
+#define PARENT ".."
+
+void print_indent(int tabs) {
+	printf("%*s", 4*tabs, "");
+}
 
 int isFileJPG(FILE *file, char *path) {
 	int counter = 0;
@@ -28,7 +34,7 @@ int isFileJPG(FILE *file, char *path) {
 	// move "buffer" over bytes
 	do {
 		if (counter >= MAX_BYTES) {
-			printf("%20s exceeds max file size: %d bytes\n", path, MAX_BYTES);
+			printf("%s exceeds max file size: %d bytes\n", path, MAX_BYTES);
 			return 0;
 		}
 		// move "buffer" forward
@@ -53,53 +59,53 @@ int isFilePathJPG(char *path) {
 	FILE *file = fopen(path, "rb");
 	int isJPG = isFileJPG(file, path);
 	fclose(file);
-
-	// print invalid files to console
-	if (!isJPG) {
-		printf("%30s - INVALID\n", path);
-	}
-
 	return isJPG;
 }
 
-int validateFiles(char *path) {
-	// START recursion
+int validateFiles(char *path, int depth) {
 	// validate path
 	if (access(path, F_OK)) {
 		printf("'%s' cannot be accessed\n", path);
 		return 1;
 	}
 	
-	// determine file or dir
 	DIR *dir = opendir(path);
-	
+
+	// do something for files	
 	if (!dir) {
 		if (isFilePathJPG(path)) {
-			printf("%30s is a valid jpg image\n", path);
+			printf("%s - VALID\n", path);
+		} else {
+			printf("%s - INVALID\n", path);
 		}
 		
 		return 0;
 	}
 	
-	// path is dir, start checking contents
+	// path is dir, setup recursive call
 	
 	char *childPath = (char*)malloc(30 * sizeof(char));
+	char *selfDir = SELF, *parentDir = PARENT;
+
 	struct dirent *dirChild;
 	char slash = '/';
 	
-	printf("'%s' is a dir, checking contents...\n", path);
+	printf("\n'%s' is a dir, checking contents...\n", path);
 	while ((dirChild = readdir(dir)) != NULL) {
-		printf("%s\n", dirChild->d_name);
 		
-		// get path of child	
+		// don't recursively call self or parent dir
+		if (!strcmp(dirChild->d_name, selfDir) | !strcmp(dirChild->d_name, parentDir)) continue;
+
+		// get new path for recursive call	
 		strcpy(childPath, path);
-		strcat(childPath, &slash);
+		strncat(childPath, &slash, 1);
 		strcat(childPath, dirChild->d_name);
-		printf("%s\n", childPath);
+
+		//recursion
+		validateFiles(childPath, depth + 1);
 	}
 
 	closedir(dir);
-	// END recursion
 	return 0;
 }
 
@@ -109,6 +115,6 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	return validateFiles(argv[1]);
+	return validateFiles(argv[1], 0);
 }
 
