@@ -10,12 +10,10 @@
 #define D8 216
 #define D9 217
 
+#define MAX_PATH_LENGTH 30
 #define SELF "."
 #define PARENT ".."
 
-void print_indent(int tabs) {
-	printf("%*s", 4*tabs, "");
-}
 
 int isFileJPG(FILE *file, char *path) {
 	int counter = 0;
@@ -71,7 +69,7 @@ int validateFiles(char *path, int depth) {
 	
 	DIR *dir = opendir(path);
 
-	// do something for files	
+	// do something with files	
 	if (!dir) {
 		if (isFilePathJPG(path)) {
 			printf("%s - VALID\n", path);
@@ -84,7 +82,7 @@ int validateFiles(char *path, int depth) {
 	
 	// path is dir, setup recursive call
 	
-	char *childPath = (char*)malloc(30 * sizeof(char));
+	char *childPath = (char*)malloc(MAX_PATH_LENGTH * sizeof(char));
 	char *selfDir = SELF, *parentDir = PARENT;
 
 	struct dirent *dirChild;
